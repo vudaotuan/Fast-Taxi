@@ -19,7 +19,7 @@ public class UserLocationRequestTaxiLocation {
 			@QueryParam("curLat") int curLat, @QueryParam("curLon") int curLon) {
 		ShortOrderDAO shortOrderDAO = new ShortOrderDAO();
 		ShortOrder shortOrder = shortOrderDAO.taxiRequest(id, curLon, curLat);
-		
+
 		return shortOrder.toString();
 	}
 }
