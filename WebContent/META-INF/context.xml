@@ -1,6 +1,6 @@
 <Context>
 	<Resource name="jdbc/Database" auth="Container" type="javax.sql.DataSource"
-		maxActive="100" maxIdle="30" maxWait="10000" username="root"
+		maxActive="100" maxIdle="30" maxWait="10000" username="tuanvu"
 		password="JHJD89373" driverClassName="com.mysql.jdbc.Driver"
 		url="jdbc:mysql://210.211.102.41:3306/fast_taxi" />
 </Context>
