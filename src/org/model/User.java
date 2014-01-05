@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "user")
-public class User {
+public class User implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	@XmlAttribute(name = "id")

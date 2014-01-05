@@ -25,10 +25,10 @@ public class AppConfig extends Properties {
 			this.load(isrProperties);
 		}
 		
-		DOMConfigurator config = new DOMConfigurator();
-		config.doConfigure(this.getClass().getClassLoader()
-		        .getResourceAsStream("/log4j.xml"), LogManager
-		        .getLoggerRepository());
+//		DOMConfigurator config = new DOMConfigurator();
+//		config.doConfigure(this.getClass().getClassLoader()
+//		        .getResourceAsStream("/log4j.xml"), LogManager
+//		        .getLoggerRepository());
 	}
 
 	public static AppConfig getInstance() {
