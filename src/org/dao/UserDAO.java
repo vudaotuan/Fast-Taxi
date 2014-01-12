@@ -68,6 +68,37 @@ public class UserDAO {
 		}
 		return rs;
 	}
+	
+	public int updateUser(User user) {
+		PreparedStatement ps = null;
+		int rs = 0;
+
+		Connection con = getConnection();
+		try {
+			String query = "update user set latitude = ? , longitude = ? where id = ?";
+
+			// logger.info(query);
+			ps = con.prepareStatement(query);
+			ps.setString(1, user.getLatitude() + "");
+			ps.setString(2, user.getLongitude() + "");
+			ps.setInt(3, user.getId());
+
+			rs = ps.executeUpdate();
+
+			ps.close();
+			ps = null;
+
+			con.close();
+			con = null;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			// logger.error("selectItems:" + e.getMessage());
+		} finally {
+			finallySQL(con, ps, null);
+		}
+		return rs;
+	}
 
 	public User getUserByName(String username, String password) {
 		PreparedStatement ps = null;
@@ -76,7 +107,7 @@ public class UserDAO {
 		Connection con = getConnection();
 		User user = null;
 		try {
-			String query = "select id, username, password from user where username = ? and password = ?";
+			String query = "select id, username, password, deviceID, longitude, latitude from user where username = ? and password = ?";
 
 			// logger.info(query);
 			ps = con.prepareStatement(query);
@@ -87,8 +118,8 @@ public class UserDAO {
 
 			while (rs.next()) {
 				user = new User(rs.getInt("id"), rs.getString("username"),
-						rs.getString("password"), rs.getInt("id"),
-						rs.getInt("id"), rs.getInt("id"));
+						rs.getString("password"), rs.getInt("deviceID"),
+						rs.getInt("longitude"), rs.getInt("latitude"));
 
 			}
 
@@ -109,47 +140,6 @@ public class UserDAO {
 			finallySQL(con, ps, rs);
 		}
 		return user;
-	}
-
-	public User getCollectionCar(int id) {
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-
-		Connection con = getConnection();
-		User customer = null;
-		try {
-			String query = "select id from user where id = ?";
-
-			// logger.info(query);
-
-			ps = con.prepareStatement(query);
-
-			ps.setInt(1, id);
-
-			rs = ps.executeQuery();
-
-			while (rs.next()) {
-				customer = new User();
-
-			}
-
-			rs.close();
-
-			rs = null;
-
-			ps.close();
-			ps = null;
-
-			con.close();
-			con = null;
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			// logger.error("selectItems:" + e.getMessage());
-		} finally {
-			finallySQL(con, ps, rs);
-		}
-		return customer;
 	}
 
 	public void finallySQL(Connection con, PreparedStatement ps, ResultSet rs) {

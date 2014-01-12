@@ -8,34 +8,37 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import org.AppConfig;
 import org.model.Car;
+import org.model.User;
 
 public class CarDAO {
 
 	private Connection getConnection() {
 
-		AppConfig config = AppConfig.getInstance();
-		String URL = config.getProperty("Rongbay.con");
-		String user = config.getProperty("Rongbay.user");
-		String password = config.getProperty("Rongbay.password");
+		// AppConfig config = AppConfig.getInstance();
 		Connection con = null;
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			con = DriverManager.getConnection(URL, user, password);
-		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			Context ctx = new InitialContext();
+
+			// Look up our data source
+			DataSource ds = (DataSource) ctx
+					.lookup("java:comp/env/jdbc/Database");
+
+			// Allocate and use a connection from the pool
+			con = ds.getConnection();
+		} catch (NamingException e) {
 			e.printStackTrace();
+			// e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			// e.printStackTrace();
 		}
 		return con;
 	}
@@ -86,6 +89,109 @@ public class CarDAO {
 			finallySQL(con, ps, rs);
 		}
 		return cars;
+	}
+	
+	public int createCar(String username, String password) {
+		PreparedStatement ps = null;
+		int rs = 0;
+
+		Connection con = getConnection();
+		try {
+			String query = "insert into user(username, password) values (?, ?)";
+
+			// logger.info(query);
+			ps = con.prepareStatement(query);
+			ps.setString(1, username);
+			ps.setString(2, password);
+
+			rs = ps.executeUpdate();
+
+			ps.close();
+			ps = null;
+
+			con.close();
+			con = null;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			// logger.error("selectItems:" + e.getMessage());
+		} finally {
+			finallySQL(con, ps, null);
+		}
+		return rs;
+	}
+	
+	public int updateUser(User user) {
+		PreparedStatement ps = null;
+		int rs = 0;
+
+		Connection con = getConnection();
+		try {
+			String query = "update user set latitude = ? , longitude = ? where id = ?";
+
+			// logger.info(query);
+			ps = con.prepareStatement(query);
+			ps.setString(1, user.getLatitude() + "");
+			ps.setString(2, user.getLongitude() + "");
+			ps.setInt(3, user.getId());
+
+			rs = ps.executeUpdate();
+
+			ps.close();
+			ps = null;
+
+			con.close();
+			con = null;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			// logger.error("selectItems:" + e.getMessage());
+		} finally {
+			finallySQL(con, ps, null);
+		}
+		return rs;
+	}
+
+	public User getUserByName(String username, String password) {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		Connection con = getConnection();
+		User user = null;
+		try {
+			String query = "select id, username, password, deviceID, longitude, latitude from user where username = ? and password = ?";
+
+			// logger.info(query);
+			ps = con.prepareStatement(query);
+			ps.setString(1, username);
+			ps.setString(2, password);
+
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				user = new User(rs.getInt("id"), rs.getString("username"),
+						rs.getString("password"), rs.getInt("deviceID"),
+						rs.getInt("longitude"), rs.getInt("latitude"));
+
+			}
+
+			rs.close();
+
+			rs = null;
+
+			ps.close();
+			ps = null;
+
+			con.close();
+			con = null;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			// logger.error("selectItems:" + e.getMessage());
+		} finally {
+			finallySQL(con, ps, rs);
+		}
+		return user;
 	}
 
 	public void finallySQL(Connection con, PreparedStatement ps, ResultSet rs) {
